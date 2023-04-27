@@ -1,0 +1,28 @@
+version: "3"
+services:
+  nginx_reverse_proxy:
+    image: nginx
+    ports:
+      - 80
+      - 443
+    volumes:
+      - ./certbot/letsencrypt:/etc/letsencrypt
+  webserver:
+    image: nginx
+    ports:
+      - 8000:80
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/conf:/etc/nginx
+      - ./certbot/letsencrypt:/etc/letsencrypt
+    command:
+      - certonly
+      - --standalone
+      - --non-interactive
+      - --agree-tos
+      - --test-cert
+      - -d example.com
+      - -m example@example.com
+    ports:
+      - 8001:80
